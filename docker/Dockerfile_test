@@ -1,0 +1,19 @@
+
+FROM python:3.8-alpine
+
+RUN apk add --no-cache make=4.4.1-r2
+
+WORKDIR /home/microblog
+
+COPY requirements requirements
+COPY requirements.txt Makefile pytest.ini .pylintrc .coveragerc ./
+COPY docker/test.sh ./test.sh
+
+RUN python -m venv .venv && \
+    .venv/bin/pip install -r requirements/test.txt && \
+    chmod +x test.sh
+
+ENV PATH="/home/microblog/.venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE=1
+
+ENTRYPOINT ["./test.sh"]
