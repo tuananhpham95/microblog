@@ -85,3 +85,12 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
+
+
+
+@bp.route('/version')
+def version():
+    """
+    Return the current application version.
+    """
+    return current_app.config.get('APP_VERSION', 'unknown')

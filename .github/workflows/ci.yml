@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and run tests
+        run: docker compose run --build --rm test
+
+      - name: Validate Dockerfiles
+        run: make validate-docker

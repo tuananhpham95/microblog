@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql/mysql-server:5.7
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: microblog
+      MYSQL_USER: microblog
+      MYSQL_PASSWORD: devpass123
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  prod:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_prod
+      args:
+        APP_VERSION: ${APP_VERSION:-unknown}
+    ports:
+      - "8000:5000"
+    environment:
+      DATABASE_URL: mysql+pymysql://microblog:devpass123@mysql:3306/microblog
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_test
+    volumes:
+      - ./app:/home/microblog/app
+      - ./tests:/home/microblog/tests
